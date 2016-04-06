@@ -16,7 +16,8 @@
             {{#each history}}
             
             <div class="chatwrapper">
-              <div class="{{creatBy}} chatpanel">{{text}}</div>
+
+              <div class="{{creatBy}} chatpanel {{#if isOwner creatBy}}right{{/if}}">{{text}}</div>
             </div>  
 
              {{/each}}

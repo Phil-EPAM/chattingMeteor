@@ -6,7 +6,7 @@ import { ChatHistory } from '../api/users.js';
 import '../api/users.js';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import './body.html';
-import './task.js';
+// import './task.js';
 
 Template.body.onCreated(function bodyOnCreated() {
   this.bottom = new ReactiveDict();
@@ -14,10 +14,11 @@ Template.body.onCreated(function bodyOnCreated() {
   this.UID = new ReactiveDict();
   Meteor.subscribe('allUsers');
   this.state.set('chattingToNow', Meteor.userId())
+  var x = parseInt(ChatHistory.find({}).count())*385;
+  $('.chat-list').scrollTop(x);
 });
 
 Tracker.autorun(function () {
-      
   var oldest = _.max(ChatHistory.find({}).count())
   if (oldest) {scrollToBottom()}
 });
@@ -25,9 +26,15 @@ Tracker.autorun(function () {
 
 Template.body.helpers({
 
+  isOwner:function(name){
+    if ( name === Meteor.userId()){
+      return true
+    }
+  },
+
   chatContent() {
     var x = Template.instance().UID.get('UID');
-    scrollToBottom();
+    // scrollToBottom();
     return ChatHistory.find({'UID':x},{sort: {lastModified: 1}})
   },
   users() {
@@ -37,14 +44,6 @@ Template.body.helpers({
 
 
 
-// Template.body.updateRender = function () {
-//   Meteor.defer(function () {
-//     scrollToBottom()
-//   });
-//   // return nothing
-// };
-
-  // Use the Packery jQuery plugin
 
 
 Template.body.events({
@@ -55,9 +54,9 @@ Template.body.events({
     instance.UID.set('UID',UID);
     instance.bottom.set('true',true);
     Meteor.subscribe('chatHistory',UID,function(){
-      var x ='.'+Meteor.userId();
-      $(x).addClass('right');
-      scrollToBottom();
+      // var x ='.'+Meteor.userId();
+      // $(x).addClass('right');
+      // scrollToBottom();
     });
     var target = event.target
     $('.userName').removeClass('abc')
@@ -74,8 +73,8 @@ Template.body.events({
     // Insert a task into the collection
     // Meteor.call('chatHistory.update', text, Meteor.userId(), instance.state.get('chattingToNow'));
     Meteor.call('chatHistory.addChattingHistory', text, Meteor.userId(), instance.state.get('chattingToNow'), UID);
-    var x ='.'+Meteor.userId();
-    $(x).addClass('right');
+    // var x ='.'+Meteor.userId();
+    // $(x).addClass('right');
     scrollToBottom();
     target.text.value = ''
   },
@@ -89,12 +88,5 @@ function scrollToBottom (){
   });
   $('.chat-list').scrollTop(height);
 
-}
-
-function scrollToNext (){
-  if(Template.instance().bottom.get('true')){
-    scrollToBottom()
-    Template.instance().bottom.set('true',false);
-  }
 }
 
